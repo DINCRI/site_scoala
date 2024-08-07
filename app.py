@@ -44,13 +44,15 @@ class Post(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False) 
     description = db.Column(db.Text, nullable=False)
-    upload = FileUploadField('File', namegen=prefix_name)
+    upload = FileUploadField('File', base_path='/home/cristi/repos/site_scoala/uploads', namegen=prefix_name)
+
+
 
 with app.app_context():
     db.create_all()
 
 
-admin = Admin(app, name='microblog', template_mode='bootstrap3')
+admin = Admin(app, name='admin', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Post, db.session))
 
