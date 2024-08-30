@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html data-theme="cmyk" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Anunțuri - Liceul cu Program Sportiv</title>
+    <style>
+        .anunt-img {
+            max-height: 300px; /* Limitează înălțimea maximă la 300px */
+            width: 100%; /* Asigură că imaginea ocupă toată lățimea containerului */
+            object-fit: cover; /* Asigură că imaginea se potrivește în container păstrând proporțiile */
+            border-radius: 0.5rem; /* Colțuri rotunjite pentru imagini */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar bg-base-100 shadow-lg sticky top-0 z-50">
+        <div class="navbar-start">
+            <a class="btn btn-ghost normal-case text-xl" href="{{ url_for('index') }}">Liceul cu Program Sportiv</a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="{{ url_for('index') }}">Acasă</a></li>
+                <li><a href="{{ url_for('anunturi') }}">Anunțuri</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Pagina de Anunțuri -->
+    <div class="p-10">
+        <h2 class="text-4xl font-bold text-center mb-8">Anunțuri</h2>
+        <div class="space-y-10">
+            {% for post in posts %}
+            <div class="card bg-base-200 shadow-xl">
+                <figure class="p-6">
+                    {% if post.uploads %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ post.uploads.split(',')[0]) }}" alt="{{ post.title }}" class="anunt-img">
+                    {% endif %}
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title text-3xl">{{ post.title }}</h2>
+                    <p>{{ post.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer bg-base-200 text-base-content p-10 mt-10 border-t-2 border-base-300">
+        <div>
+            <span class="footer-title">Linkuri utile</span>
+            <a class="link link-hover">Acasă</a>
+            <a class="link link-hover">Admitere</a>
+            <a class="link link-hover">Contact</a>
+        </div>
+        <div>
+            <span class="footer-title">Social Media</span>
+            <a class="link link-hover">Facebook</a>
+            <a class="link link-hover">Instagram</a>
+            <a class="link link-hover">YouTube</a>
+        </div>
+        <div>
+            <span class="footer-title">Contact</span>
+            <p>Telefon: 0123 456 789</p>
+            <p>Email: contact@liceul-sportiv.ro</p>
+        </div>
+    </footer>
+</body>
+</html>

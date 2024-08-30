@@ -1,65 +1,95 @@
+import os
 import os.path as op
-from flask import Flask, render_template
-from flask_admin import Admin
+from flask import Flask, render_template, redirect, url_for, request, abort
+from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
-from flask_basicauth import BasicAuth
 from werkzeug.utils import secure_filename
+from flask_basicauth import BasicAuth
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, MultipleFileField
+from wtforms.validators import DataRequired
 from flask_admin.form import FileUploadField
 
 app = Flask(__name__)
 
-# set optional bootswatch theme
+
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 app.secret_key = "super secret key"
 
 app.config['BASIC_AUTH_USERNAME'] = 'john'
 app.config['BASIC_AUTH_PASSWORD'] = 'matrix'
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 
 basic_auth = BasicAuth(app)
-app.config['BASIC_AUTH_FORCE'] = True
 
-def prefix_name(obj, file_data):
-    parts = op.splitext(file_data.filename)
-    return secure_filename('file-%s%s' % parts)
-
-class Base(DeclarativeBase):
-  pass
-
-db = SQLAlchemy(model_class=Base)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db" 
-# initialize the app with the extension
-db.init_app(app)
-
+db = SQLAlchemy(app)
 
 class User(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     email = db.Column(db.String(255), nullable=False)
 
 class Post(db.Model):
-    id= db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False) 
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    upload = FileUploadField('File', base_path='/home/cristi/repos/site_scoala/uploads', namegen=prefix_name)
-
-
+    uploads = db.Column(db.Text, nullable=True)
 
 with app.app_context():
     db.create_all()
 
 
-admin = Admin(app, name='admin', template_mode='bootstrap3')
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Post, db.session))
+ALLOWED_IP = '127.0.0.1'  
 
+@app.before_request
+def limit_remote_addr():
+    print(f"Accesare de la: {request.remote_addr}")
+    if request.remote_addr != ALLOWED_IP and request.path.startswith('/admin'):
+        abort(403)  
+
+class MyAdminIndexView(AdminIndexView):
+    @expose('/')
+    @basic_auth.required
+    def index(self):
+        return super(MyAdminIndexView, self).index()
+
+class MyModelView(ModelView):
+    form_extra_fields = {
+        'uploads': MultipleFileField('Files')
+    }
+
+    def on_model_change(self, form, model, is_created):
+        if 'uploads' in request.files:
+            files = request.files.getlist("uploads")
+            filenames = []
+            for file in files:
+                if file:
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    filenames.append(filename)
+            model.uploads = ','.join(filenames)
+
+    def is_accessible(self):
+        return basic_auth.authenticate()
+
+admin = Admin(app, name='admin', template_mode='bootstrap3', index_view=MyAdminIndexView())
+admin.add_view(MyModelView(User, db.session))
+admin.add_view(MyModelView(Post, db.session))
 
 @app.route("/")
 def index():
     return render_template("index.html", posts=Post.query.all())
 
+@app.route("/anunturi")
+def anunturi():
+    return render_template("anunturi.html", posts=Post.query.all())
 
-app.run()
+if __name__ == "__main__":
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+    
+    app.run()
