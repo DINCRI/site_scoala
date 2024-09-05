@@ -1,50 +1,85 @@
 <!DOCTYPE html>
-<html data-theme="cmyk" lang="en">
+<html data-theme="cmyk" lang="ro">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Informatii utile - Liceul cu Program Sportiv</title>
+    <title>Informații utile - Liceul cu Program Sportiv</title>
     <style>
-         <style>
-        .truncate-description {
-            display: -webkit-box;
-            -webkit-line-clamp: 3; /* Limitează la 3 linii */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
         .navbar-logo {
-            height: 2.5rem; /* Fixează înălțimea logo-ului */
-            width: auto; /* Păstrează proporțiile logo-ului */
-            margin-left: 0.5rem; /* Adaugă un mic spațiu între logo și text */
+            height: 2.5rem;
+            width: auto;
+            margin-left: 0.5rem;
         }
         @media (max-width: 1024px) {
             .navbar-logo {
-                display: none; /* Ascunde logo-ul pe ecrane mici */
+                display: none;
             }
             .navbar-start {
-                flex-grow: 1; /* Asigură că textul este centrat corect */
+                flex-grow: 1;
             }
             .navbar-end {
                 flex-grow: 0;
             }
         }
-    </style>
+        .sidebar {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-right: 1px solid #e5e7eb;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin-bottom: 0.75rem;
+        }
+        .sidebar li a {
+            text-decoration: none;
+            color: #3b82f6;
+            transition: color 0.3s ease;
+        }
+        .sidebar li a:hover {
+            color: #2563eb;
+        }
+        .content-section {
+            padding: 2rem;
+        }
+        .content-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        .content-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .content-section li {
+            margin-bottom: 1rem;
+        }
+        .content-section li a {
+            text-decoration: none;
+            color: #3b82f6;
+            transition: color 0.3s ease;
+        }
+        .content-section li a:hover {
+            color: #2563eb;
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <div class="navbar bg-base-100 shadow-lg sticky top-0 z-50">
         <div class="navbar-start">
-            <a class="btn btn-ghost normal-case text-xl">Liceul cu Program Sportiv</a>
+            <a class="btn btn-ghost normal-case text-xl" href="{{ url_for('index') }}">Liceul cu Program Sportiv</a>
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
                 <li><a href="{{ url_for('index') }}">Acasă</a></li>
-                <li><a href="{{ url_for('anunturi') }}">Anunturi</a></li>
-                <li><a href="#">Despre noi</a></li>
+                <li><a href="{{ url_for('anunturi') }}">Anunțuri</a></li>
+                <li><a href="{{url_for('despre_noi')}}">Despre noi</a></li>
                 <li><a href="#">Examene naționale</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
@@ -73,27 +108,92 @@
             </div>
         </div>
     </div>
-    
-    <div class="p-10">
-        <h2 class="text-4xl font-bold text-center mb-8">Informații utille</h2>
-        <div class="space-y-10">
-            {% for document in documents %}
-            <div class="card bg-base-200 shadow-xl">
-                <figure class="p-6">
-                    {% if document.uploads %}
-                    <a href="{{ url_for('static', filename='uploads/' ~ document.uploads.split(',')[0]) }}" download="">a</a>
-                    {% endif %}
-                </figure>
-                <div class="card-body">
-                    <h2 class="card-title text-3xl">{{ document.title }}</h2>
-                    <p>{{ document.description }}</p>
-                </div>
+
+    <!-- Structura principală -->
+    <div class="container mx-auto flex">
+        <!-- Meniul lateral -->
+        <div class="sidebar w-1/4">
+            <h2 class="text-xl font-bold mb-4">Informații utile</h2>
+            <ul>
+                <li><a href="#regulamente">Regulamente</a></li>
+                <li><a href="#planuri-cadru">Planuri cadru</a></li>
+                <li><a href="#formulare">Formulare</a></li>
+                <li><a href="#programul-elevilor">Programul elevilor</a></li>
+                <li><a href="#programul-profesorilor">Programul profesorilor</a></li>
+                <li><a href="#orare">Orare</a></li>
+                <li><a href="#structura-anului-scolar">Structura anului școlar</a></li>
+            </ul>
+        </div>
+
+        <!-- Conținutul principal -->
+        <div class="content-section w-3/4">
+            <!-- Secțiuni de informații -->
+            <div id="regulamente" class="mb-10">
+                <h2>Regulamente</h2>
+                <ul>
+                    <li><a href="#">Regulament intern</a></li>
+                    <li><a href="#">Regulament de ordine interioară</a></li>
+                    <li><a href="#">Codul etic</a></li>
+                </ul>
             </div>
-            {% endfor %}
+
+            <div id="planuri-cadru" class="mb-10">
+                <h2>Planuri cadru</h2>
+                <ul>
+                    <li><a href="#">Planul cadru pentru liceu</a></li>
+                    <li><a href="#">Planul cadru pentru gimnaziu</a></li>
+                    <li><a href="#">Planul cadru pentru învățământ primar</a></li>
+                </ul>
+            </div>
+
+            <div id="formulare" class="mb-10">
+                <h2>Formulare</h2>
+                <ul>
+                    <li><a href="#">Cerere de transfer</a></li>
+                    <li><a href="#">Cerere de reînscriere</a></li>
+                    <li><a href="#">Cerere de bursă</a></li>
+                </ul>
+            </div>
+
+            <div id="programul-elevilor" class="mb-10">
+                <h2>Programul elevilor</h2>
+                <ul>
+                    <li><a href="#">Orar clasa a IX-a</a></li>
+                    <li><a href="#">Orar clasa a X-a</a></li>
+                    <li><a href="#">Orar clasa a XI-a</a></li>
+                    <li><a href="#">Orar clasa a XII-a</a></li>
+                </ul>
+            </div>
+
+            <div id="programul-profesorilor" class="mb-10">
+                <h2>Programul profesorilor</h2>
+                <ul>
+                    <li><a href="#">Programul de consultații</a></li>
+                    <li><a href="#">Programul de întâlniri cu părinții</a></li>
+                </ul>
+            </div>
+
+            <div id="orare" class="mb-10">
+                <h2>Orare</h2>
+                <ul>
+                    <li><a href="#">Orar clasele a IX-a</a></li>
+                    <li><a href="#">Orar clasele a X-a</a></li>
+                    <li><a href="#">Orar clasele a XI-a</a></li>
+                    <li><a href="#">Orar clasele a XII-a</a></li>
+                </ul>
+            </div>
+
+            <div id="structura-anului-scolar" class="mb-10">
+                <h2>Structura anului școlar</h2>
+                <ul>
+                    <li><a href="#">Anul școlar 2024-2025</a></li>
+                    <li><a href="#">Anul școlar 2023-2024</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
-   
+    <!-- Footer -->
     <footer class="footer bg-base-200 text-base-content p-10 mt-10 border-t-2 border-base-300">
         <div>
             <span class="footer-title">Linkuri utile</span>

@@ -42,10 +42,9 @@
             <ul class="menu menu-horizontal px-1">
                 <li><a href="#">Acasă</a></li>
                 <li><a href="{{ url_for('utile') }}">Informații utile</a></li>
-                <li><a href="#">Despre noi</a></li>
-                <li><a href="#">Examene naționale</a></li>
+                <li><a href="{{url_for('despre_noi')}}">Despre noi</a></li>
                 <li><a href="{{ url_for('anunturi') }}">Anunțuri</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="{{url_for('contact')}}">Contact</a></li>
             </ul>
         </div>
         <div class="navbar-end">

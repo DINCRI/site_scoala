@@ -99,6 +99,14 @@ def anunturi():
 def utile():
     return render_template("utile.html", documents=Document.query.all())
 
+@app.route("/Despre noi")
+def despre_noi():
+    return render_template("despre_noi.html")
+
+@app.route("/Contact")
+def contact():
+    return render_template("contact.html")
+    
 if __name__ == "__main__":
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
