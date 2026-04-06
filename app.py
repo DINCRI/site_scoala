@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, abort, flash
+from flask import Flask, render_template, request, flash, send_from_directory
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
@@ -9,21 +9,53 @@ from wtforms import MultipleFileField
 
 app = Flask(__name__)
 
+# ------------------------
+# PATH BASE (IMPORTANT)
+# ------------------------
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# ------------------------
+# CONFIG
+# ------------------------
+
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-app.secret_key = "super secret key"
+app.secret_key = os.environ.get("SECRET_KEY", "super-secret-key")
 
-app.config['BASIC_AUTH_USERNAME'] = 'john'
-app.config['BASIC_AUTH_PASSWORD'] = 'matrix'
+app.config['BASIC_AUTH_USERNAME'] = os.environ.get("BASIC_AUTH_USERNAME", "john")
+app.config['BASIC_AUTH_PASSWORD'] = os.environ.get("BASIC_AUTH_PASSWORD", "matrix")
 
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# ------------------------
+# DATABASE CONFIG
+# ------------------------
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+database_url = os.environ.get("DATABASE_URL")
+
+if database_url:
+    # Railway (Postgres)
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+else:
+    # Local (SQLite)
+    DATA_DIR = os.path.join(BASE_DIR, "data")
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    DB_PATH = os.path.join(DATA_DIR, "project.db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# ------------------------
+# UPLOAD FOLDER
+# ------------------------
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 basic_auth = BasicAuth(app)
 db = SQLAlchemy(app)
-
 
 # ------------------------
 # MODELE
@@ -70,7 +102,7 @@ class Inscriere(db.Model):
 
 
 # ------------------------
-# INITIALIZARE DB
+# INIT DB
 # ------------------------
 
 with app.app_context():
@@ -100,25 +132,15 @@ with app.app_context():
 
     db.session.commit()
 
-
 # ------------------------
-# SECURITATE ADMIN
+# ADMIN
 # ------------------------
-
-ALLOWED_IP = '127.0.0.1'
-
-
-@app.before_request
-def limit_remote_addr():
-    if request.remote_addr != ALLOWED_IP and request.path.startswith('/admin'):
-        abort(403)
-
 
 class MyAdminIndexView(AdminIndexView):
     @expose('/')
     @basic_auth.required
     def index(self):
-        return super(MyAdminIndexView, self).index()
+        return super().index()
 
 
 class MyModelView(ModelView):
@@ -151,9 +173,16 @@ admin.add_view(MyModelView(Document, db.session))
 admin.add_view(MyModelView(Sport, db.session))
 admin.add_view(MyModelView(Inscriere, db.session))
 
+# ------------------------
+# UPLOAD ACCESS
+# ------------------------
+
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 # ------------------------
-# RUTE SITE
+# ROUTE
 # ------------------------
 
 @app.route("/")
@@ -180,12 +209,43 @@ def index():
             "procent": procent
         })
 
-    return render_template(
-        "index.html",
-        posts=posts,
-        sporturi_status=sporturi_status
-    )
+    return render_template("index.html", posts=posts, sporturi_status=sporturi_status)
 
+
+@app.route("/inscriere/", methods=('GET', 'POST'))
+def inscriere():
+    if request.method == 'POST':
+        nume = request.form['nume'].strip()
+        prenume = request.form['prenume'].strip()
+        email = request.form['email'].strip()
+        telefon = request.form['telefon'].strip()
+        sport = request.form['sport'].strip()
+
+        if not nume:
+            flash('Numele este obligatoriu!', 'warning')
+        elif not prenume:
+            flash('Prenumele este obligatoriu!', 'warning')
+        elif not email:
+            flash('Emailul este obligatoriu!', 'warning')
+        elif not telefon:
+            flash('Telefonul este obligatoriu!', 'warning')
+        elif not sport:
+            flash('Selectează un sport!', 'warning')
+        else:
+            inscriere_noua = Inscriere(
+                nume=nume,
+                prenume=prenume,
+                email=email,
+                telefon=telefon,
+                sport=sport
+            )
+            db.session.add(inscriere_noua)
+            db.session.commit()
+
+            return render_template('inscriere.html', show_modal=True)
+
+    sporturi = Sport.query.all()
+    return render_template('inscriere.html', sporturi=sporturi)
 
 @app.route("/anunturi")
 def anunturi():
@@ -212,68 +272,9 @@ def despre_noi():
 def contact():
     return render_template("contact.html")
 
-
 # ------------------------
-# INSCRIERE
+# RUN
 # ------------------------
-
-@app.route('/inscriere/', methods=('GET', 'POST'))
-def inscriere():
-    if request.method == 'POST':
-        nume = request.form['nume'].strip()
-        prenume = request.form['prenume'].strip()
-        email = request.form['email'].strip()
-        telefon = request.form['telefon'].strip()
-        sport = request.form['sport'].strip()
-
-        if not nume:
-            flash('Numele este obligatoriu!', 'warning')
-        elif not prenume:
-            flash('Prenumele este obligatoriu!', 'warning')
-        elif not email:
-            flash('Emailul este obligatoriu!', 'warning')
-        elif not telefon:
-            flash('Telefonul este obligatoriu!', 'warning')
-        elif not sport:
-            flash('Selectează un sport!', 'warning')
-        else:
-            sport_selectat = Sport.query.filter_by(nume=sport).first()
-
-            if not sport_selectat:
-                flash('Sport invalid!', 'warning')
-            else:
-                inscrisi_curent = Inscriere.query.filter_by(sport=sport).count()
-
-                if inscrisi_curent >= sport_selectat.locuri_maxime:
-                    flash(f'Nu mai sunt locuri disponibile la {sport}!', 'warning')
-                else:
-                    existing = Inscriere.query.filter_by(email=email, sport=sport).first()
-
-                    if existing:
-                        flash('Există deja o înscriere cu acest email la sportul selectat!', 'warning')
-                    else:
-                        inscriere_noua = Inscriere(
-                            nume=nume,
-                            prenume=prenume,
-                            email=email,
-                            telefon=telefon,
-                            sport=sport
-                        )
-
-                        db.session.add(inscriere_noua)
-                        db.session.commit()
-
-                        return render_template(
-                            'inscriere.html',
-                            show_modal=True,
-                            nume=nume,
-                            prenume=prenume,
-                            sport=sport
-                        )
-
-    sporturi = Sport.query.all()
-    return render_template('inscriere.html', sporturi=sporturi)
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
