@@ -174,70 +174,58 @@
   <!-- POSTS -->
   <main class="mx-auto max-w-6xl px-6 pb-12">
     <div class="space-y-6">
-      {% for post in posts %}
-      <article class="reveal card-glass rounded-3xl p-5 lg:p-7">
+
+      <article class="reveal card-glass rounded-3xl p-5 lg:p-7 is-visible" style="opacity: 1; transform: translateY(0);">
         <div class="grid lg:grid-cols-12 gap-6 items-start">
 
-          <!-- MEDIA -->
           <div class="lg:col-span-5">
-            {% if post.uploads %}
-              {% set imgs = post.uploads.split(',') %}
-              {% if imgs|length > 1 %}
-                <!-- Carousel if multiple images -->
-                <div class="carousel w-full rounded-3xl overflow-hidden border border-base-300 bg-white">
-                  {% for img in imgs %}
-                  <div id="slide-{{ post.id }}-{{ loop.index }}" class="carousel-item relative w-full">
-                    <img
-                      src="{{ url_for('static', filename='uploads/' ~ img) }}"
-                      alt="{{ post.title }} - imagine {{ loop.index }}"
-                      class="post-img rounded-none border-0"
-                      loading="lazy"
-                    />
-                    <div class="absolute left-3 right-3 top-1/2 flex -translate-y-1/2 transform justify-between">
-                      <a href="#slide-{{ post.id }}-{{ (loop.index - 1) if loop.index > 1 else (imgs|length) }}" class="btn btn-circle btn-sm">❮</a>
-                      <a href="#slide-{{ post.id }}-{{ (loop.index + 1) if loop.index < (imgs|length) else 1 }}" class="btn btn-circle btn-sm">❯</a>
-                    </div>
-                  </div>
-                  {% endfor %}
-                </div>
-
-                <div class="mt-3 flex flex-wrap gap-2">
-                  {% for _ in imgs %}
-                    <span class="badge badge-outline">{{ loop.index }}/{{ imgs|length }}</span>
-                  {% endfor %}
-                </div>
-              {% else %}
-                <!-- Single image -->
-                <img
-                  src="{{ url_for('static', filename='uploads/' ~ imgs[0]) }}"
-                  alt="{{ post.title }}"
-                  class="post-img"
-                  loading="lazy"
-                />
-              {% endif %}
-            {% else %}
-              <!-- No image -->
-              <div class="rounded-3xl border border-base-300 bg-white p-8 flex items-center justify-center h-72">
-                <div class="text-center">
-                  <div class="text-5xl">📰</div>
-                  <div class="mt-2 font-black text-primary">Fără imagine</div>
-                  <div class="text-sm muted mt-1">Poți încărca poze din admin la postare.</div>
-                </div>
-              </div>
-            {% endif %}
+            <img
+              src="{{ url_for('static', filename='uploads/start_la_miscare_afis.jpg') }}"
+              alt="Start la Mișcare - 4 Iunie"
+              class="w-full h-auto rounded-3xl border border-black/12 bg-white block shadow-sm"
+              loading="lazy"
+            />
           </div>
 
-          <!-- CONTENT -->
           <div class="lg:col-span-7">
             <div class="flex items-start justify-between gap-3">
-              <h2 class="text-2xl lg:text-3xl font-black text-primary">{{ post.title }}</h2>
-              <span class="badge badge-primary">Anunț</span>
+              <h2 class="text-2xl lg:text-3xl font-black text-primary">📢 S-A DAT STARTUL ÎNSCRIERILOR! 🏃‍♂️💨</h2>
+              <span class="badge badge-primary">Important</span>
             </div>
 
-            <p class="mt-3 subtitle whitespace-pre-line">{{ post.description }}</p>
+            <div class="mt-3 subtitle whitespace-pre-line text-sm lg:text-base space-y-4">
+              <p>Ești pregătit să pui mâna pe energie și să te distrezi prin sport? Pe <strong>4 iunie 2026</strong>, dăm împreună „Start la mișcare” – evenimentul sportiv al anului dedicat competiției, energiei pozitive și atelierelor demonstrative!</p>
+              
+              <p>Fie că ești pasionat de sporturile clasice, fie că vrei să descoperi activități noi și spectaculoase, avem câte ceva pentru fiecare.</p>
+
+              <h3 class="font-bold text-lg mt-4 text-secondary">🏆 Ce te așteaptă la „Start la mișcare”?</h3>
+              
+              <div class="pl-2 border-l-2 border-primary space-y-2">
+                <p><strong>Competiții și activități sportive:</strong></p>
+                <p>🏃‍♂️ <strong>Cros</strong> – testează-ți rezistența!</p>
+                <p>🏀 <strong>Sporturi de echipă:</strong> Handbal, Baschet, Volei și Mini fotbal.</p>
+                <p>🎾 <strong>Sporturi cu rachetă/paletă:</strong> Tenis de masă, Tenis de câmp, Badminton și Teqball.</p>
+                <p>🥊 <strong>Forță și Arte Marțiale:</strong> Haltere, Taekwondo, Box și Demonstrație Karate.</p>
+                
+                <p class="pt-2"><strong>Ateliere și activități demonstrative inedite:</strong></p>
+                <p>🤹‍♂️ Diabolo, Flowerstick și Poi (artă și îndemânare)</p>
+                <p>🥏 Frisbee golf și Hacky sack</p>
+                <p>🎯 Airsoft & Dans Majorete</p>
+              </div>
+
+              <div class="bg-base-200 p-4 rounded-xl mt-4 border border-base-300">
+                <p>📅 <strong>Detalii importante:</strong></p>
+                <p>• <strong>Data evenimentului:</strong> 4 Iunie 2026</p>
+                <p>• <strong>Locația:</strong> Alba Iulia, Șanturile Cetății</p>
+                <p>• <strong>Înscrieri:</strong> Locurile pot fi limitate, așa că nu sta pe gânduri!</p>
+              </div>
+
+              <p class="font-bold text-primary mt-3">🔗 Locul tău te așteaptă! Înscrie-te acum accesând link-ul de mai jos.</p>
+              
+            </div>
 
             <div class="mt-5 flex flex-wrap gap-2">
-              <a href="{{ url_for('index') }}#inscriere" class="btn btn-primary btn-sm">Înscrie-te</a>
+              <a href="{{ url_for('inscriere') }}" class="btn btn-primary btn-sm">Înscrie-te Acum</a>
               <a href="{{ url_for('index') }}#program" class="btn btn-outline btn-sm">Vezi program</a>
               <a href="{{ url_for('index') }}#contact" class="btn btn-soft btn-sm">Contact</a>
             </div>
@@ -245,7 +233,54 @@
 
         </div>
       </article>
+      {% for post in posts %}
+      <article class="reveal card-glass rounded-3xl p-5 lg:p-7">
+        <div class="grid lg:grid-cols-12 gap-6 items-start">
+          
+          <div class="lg:col-span-5">
+            {% if post.uploads %}
+              {% set imgs = post.uploads.split(',') %}
+              {% if imgs|length > 1 %}
+                <div class="carousel w-full rounded-3xl overflow-hidden border border-base-300 bg-white">
+                  {% for img in imgs %}
+                  <div id="slide-{{ post.id }}-{{ loop.index }}" class="carousel-item relative w-full">
+                    <img src="{{ url_for('static', filename='uploads/' ~ img) }}" alt="{{ post.title }}" class="post-img rounded-none border-0" loading="lazy" />
+                    <div class="absolute left-3 right-3 top-1/2 flex -translate-y-1/2 transform justify-between">
+                      <a href="#slide-{{ post.id }}-{{ (loop.index - 1) if loop.index > 1 else (imgs|length) }}" class="btn btn-circle btn-sm">❮</a>
+                      <a href="#slide-{{ post.id }}-{{ (loop.index + 1) if loop.index < (imgs|length) else 1 }}" class="btn btn-circle btn-sm">❯</a>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <img src="{{ url_for('static', filename='uploads/' ~ imgs[0]) }}" alt="{{ post.title }}" class="post-img" loading="lazy" />
+              {% endif %}
+            {% else %}
+              <div class="rounded-3xl border border-base-300 bg-white p-8 flex items-center justify-center h-72">
+                <div class="text-center">
+                  <div class="text-5xl">📰</div>
+                  <div class="mt-2 font-black text-primary">Fără imagine</div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="lg:col-span-7">
+            <div class="flex items-start justify-between gap-3">
+              <h2 class="text-2xl lg:text-3xl font-black text-primary">{{ post.title }}</h2>
+              <span class="badge badge-primary">Anunț</span>
+            </div>
+            <p class="mt-3 subtitle whitespace-pre-line">{{ post.description }}</p>
+            <div class="mt-5 flex flex-wrap gap-2">
+              <a href="{{ url_for('index') }}#inscriere" class="btn btn-primary btn-sm">Înscrie-te</a>
+              <a href="{{ url_for('index') }}#program" class="btn btn-outline btn-sm">Vezi program</a>
+            </div>
+          </div>
+
+        </div>
+      </article>
       {% endfor %}
+
     </div>
   </main>
 

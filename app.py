@@ -313,12 +313,6 @@ def post_detail(post_id):
 
 
 
-
-
-
-
-
-
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 PHONE_REGEX = re.compile(r"^(\+4|4|0)7\d{8}$")
 DATE_REGEX = re.compile(r"^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$")
