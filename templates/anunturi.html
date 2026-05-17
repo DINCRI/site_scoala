@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <title>Anunțuri — Start la Mișcare</title>
-
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='uploads/logo.png') }}">
   <script>
     tailwind.config = {
       daisyui: {
@@ -268,7 +268,7 @@
       <div>
         <div class="font-black mb-3 text-primary">Linkuri</div>
         <ul class="menu menu-sm">
-          <li><a href="{{ url_for('index') }}#galerie">Galerie</a></li>
+          <li><a href="{{ url_for('index') }}#regulament">Regulament</a></li>
           <li><a href="{{ url_for('index') }}#sporturi">Sporturi</a></li>
           <li><a href="{{ url_for('index') }}#program">Program</a></li>
           <li><a href="{{ url_for('anunturi') }}">Anunțuri</a></li>

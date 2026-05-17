@@ -1,4 +1,6 @@
 import os
+import re
+from datetime import datetime
 from flask import Flask, render_template, request, flash, send_from_directory, redirect, url_for
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
@@ -6,10 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from flask_basicauth import BasicAuth
 from wtforms import MultipleFileField
-import re
-from datetime import datetime
 from flask_wtf.csrf import CSRFProtect
-from sqlalchemy.exc import IntegrityError
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from sqlalchemy.exc import IntegrityError
@@ -17,10 +16,16 @@ from sqlalchemy.exc import IntegrityError
 app = Flask(__name__)
 from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
+# ✅ REZOLVARE LIMITER: Folosește Redis în producție pe Railway, altfel rămâne pe memorie locală
+redis_url = os.environ.get("REDIS_PRIVATE_URL") or os.environ.get("REDIS_URL")
+storage_uri = redis_url if redis_url else "memory://"
+
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri=storage_uri
 )
 csrf = CSRFProtect(app)
 
@@ -28,6 +33,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
 app.secret_key = os.environ.get("SECRET_KEY", "super-secret-key")
+
 # 🔐 Securitate cookies
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
@@ -263,10 +269,15 @@ def index():
     posts = Post.query.all()
     sporturi = Sport.query.all()
 
+    # ✅ OPTIMIZARE CRITICĂ: Numărăm toate înscrierile dintr-o singură interogare SQL grupata
+    counts_query = db.session.query(Inscriere.sport, db.func.count(Inscriere.id)).group_by(Inscriere.sport).all()
+    stats_dict = {sport_nume: count for sport_nume, count in counts_query}
+
     sporturi_status = []
 
     for sport in sporturi:
-        inscrisi = Inscriere.query.filter_by(sport=sport.nume).count()
+        # Extragem direct din dicționarul din memorie, fără să mai apelăm baza de date în loop
+        inscrisi = stats_dict.get(sport.nume, 0)
 
         procent = 0
         if sport.locuri_maxime > 0:
@@ -301,19 +312,12 @@ def post_detail(post_id):
     return render_template("post_detail.html", post=post)
 
 
-@app.route("/utile")
-def utile():
-    return render_template("utile.html", documents=Document.query.all())
 
 
-@app.route("/despre-noi")
-def despre_noi():
-    return render_template("despre_noi.html")
 
 
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
+
+
 
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 PHONE_REGEX = re.compile(r"^(\+4|4|0)7\d{8}$")
