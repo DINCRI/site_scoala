@@ -36,8 +36,8 @@ UNDER_MAINTENANCE = True
 
 @app.before_request
 def check_for_maintenance():
-    # Permitem fișierelor statice (CSS, imagini) să se încarce oricum
-    if request.endpoint == 'static':
+    # 🛡️ Siguranță maximă: dacă request.endpoint este None sau 'static', lăsăm cererea să treacă
+    if request.endpoint is None or request.endpoint == 'static':
         return
 
     if UNDER_MAINTENANCE:
