@@ -29,6 +29,44 @@ limiter = Limiter(
 )
 csrf = CSRFProtect(app)
 
+# ==========================================
+# 🛑 MOD MENTENANȚĂ (PENTRU LANSARE MÂINE)
+# ==========================================
+UNDER_MAINTENANCE = True 
+
+@app.before_request
+def check_for_maintenance():
+    # Permitem fișierelor statice (CSS, imagini) să se încarce oricum
+    if request.endpoint == 'static':
+        return
+
+    if UNDER_MAINTENANCE:
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Start la Mișcare - Pregătiri</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 80px 20px; background: #f8fafc; color: #334155; }
+                .card { max-width: 550px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+                h1 { color: #0f172a; font-size: 32px; margin-bottom: 16px; }
+                p { color: #64748b; font-size: 18px; line-height: 1.6; }
+                .badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 6px 16px; border-radius: 9999px; font-weight: 600; font-size: 14px; margin-bottom: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="badge">ANUNȚ IMPORTANT</div>
+                <h1>Înscrierile încep mâine! 🏃‍♂️</h1>
+                <p>Pregătim ultimele detalii tehnice pentru deschiderea oficială. Vă așteptăm cu drag începând de mâine dimineață pentru a vă rezerva locul la sportul preferat!</p>
+            </div>
+        </body>
+        </html>
+        """, 503
+# ==========================================
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
