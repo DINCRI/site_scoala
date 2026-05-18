@@ -21,12 +21,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 redis_url = os.environ.get("REDIS_PRIVATE_URL") or os.environ.get("REDIS_URL")
 storage_uri = redis_url if redis_url else "memory://"
 
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["200 per day", "50 per hour"],
-    storage_uri=storage_uri
-)
+
 csrf = CSRFProtect(app)
 
 # ==========================================
@@ -358,7 +353,7 @@ SERIE_CI_REGEX = re.compile(r"^[A-Za-z]{2}$")
 NUMAR_CI_REGEX = re.compile(r"^\d{6,8}$")
 
 @app.route("/inscriere/", methods=("GET", "POST"))
-@limiter.limit("5 per minute")
+#@limiter.limit("5 per minute")
 def inscriere():
     sporturi = Sport.query.order_by(Sport.nume.asc()).all()
 
