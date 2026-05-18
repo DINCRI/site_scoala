@@ -32,7 +32,7 @@ csrf = CSRFProtect(app)
 # ==========================================
 # 🛑 MOD MENTENANȚĂ (PENTRU LANSARE MÂINE)
 # ==========================================
-UNDER_MAINTENANCE = True 
+UNDER_MAINTENANCE = False 
 
 @app.before_request
 def check_for_maintenance():
