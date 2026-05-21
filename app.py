@@ -154,9 +154,9 @@ class Inscriere(db.Model):
     serie_ci = db.Column(db.String(20), nullable=False)
     numar_ci = db.Column(db.String(20), nullable=False)
 
-    __table_args__ = (
-        db.UniqueConstraint("email", "sport", name="uq_email_sport"),
-    )
+   # __table_args__ = (
+    #    db.UniqueConstraint("email", "sport", name="uq_email_sport"),
+   # )
     
 
 with app.app_context():
@@ -453,11 +453,8 @@ def inscriere():
             flash(f"Nu mai sunt locuri disponibile la {sport}.", "warning")
             return render_template("inscriere.html", sporturi=sporturi)
 
-        existing = Inscriere.query.filter_by(email=email, sport=sport).first()
-
-        if existing:
-            flash("Există deja o înscriere cu acest email la sportul selectat.", "warning")
-            return render_template("inscriere.html", sporturi=sporturi)
+        # ✅ VERIFICAREA VECHE DE EMAIL DUPLICAT A FOST ȘTEARSĂ DE AICI
+        # Părinții pot folosi acum același email pentru mai mulți copii.
 
         inscriere_noua = Inscriere(
             nume=nume,
@@ -479,10 +476,6 @@ def inscriere():
         try:
             db.session.add(inscriere_noua)
             db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            flash("Există deja o înscriere cu acest email la sportul selectat.", "warning")
-            return render_template("inscriere.html", sporturi=sporturi)
         except Exception:
             db.session.rollback()
             flash("A apărut o eroare la salvarea înscrierii. Te rugăm să încerci din nou.", "warning")
@@ -508,32 +501,6 @@ def inscriere():
         nume=nume,
         prenume=prenume,
         sport=sport
-    )
-
-
-@app.route("/lista-prezenta773")
-@basic_auth.required
-def lista_prezenta():
-    sport_selectat = request.args.get("sport", "").strip()
-
-    sporturi = Sport.query.order_by(Sport.nume.asc()).all()
-
-    query = Inscriere.query
-
-    if sport_selectat:
-        query = query.filter_by(sport=sport_selectat)
-
-    inscrieri = query.order_by(
-        Inscriere.sport.asc(),
-        Inscriere.nume.asc(),
-        Inscriere.prenume.asc()
-    ).all()
-
-    return render_template(
-        "lista_prezenta.html",
-        inscrieri=inscrieri,
-        sporturi=sporturi,
-        sport_selectat=sport_selectat
     )
 
 @app.route("/dashboard-inscrieri223")
@@ -573,6 +540,32 @@ def dashboard_inscrieri():
         sport_selectat=sport_selectat,
         cautare=cautare
     )
+
+@app.route("/lista-prezenta773")
+@basic_auth.required
+def lista_prezenta():
+    sport_selectat = request.args.get("sport", "").strip()
+
+    sporturi = Sport.query.order_by(Sport.nume.asc()).all()
+
+    query = Inscriere.query
+
+    if sport_selectat:
+        query = query.filter_by(sport=sport_selectat)
+
+    inscrieri = query.order_by(
+        Inscriere.sport.asc(),
+        Inscriere.nume.asc(),
+        Inscriere.prenume.asc()
+    ).all()
+
+    return render_template(
+        "lista_prezenta.html",
+        inscrieri=inscrieri,
+        sporturi=sporturi,
+        sport_selectat=sport_selectat
+    )
+
 
 @app.errorhandler(404)
 def not_found_error(error):
