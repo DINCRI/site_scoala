@@ -43,7 +43,7 @@
     }
   </script>
 
-  <title>Înscriere — Start la Mișcare</title>
+  <title>Înscrieri Încheiate — Start la Mișcare</title>
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='uploads/logo.png') }}">
   <style>
     .ribbon-bg{
@@ -124,15 +124,7 @@
 </head>
 
 <body class="min-h-screen ribbon-bg text-base-content">
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <div role="alert" class="alert alert-warning">
-          <span>{{ message }}</span>
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+
   <header class="sticky top-0 z-50">
     <div class="mx-auto max-w-6xl px-4 py-3">
       <div class="rounded-2xl bg-white/12 border border-white/20 backdrop-blur-xl">
@@ -147,7 +139,6 @@
           </div>
 
           <div class="navbar-end gap-2">
-            
             <a href="{{ url_for('anunturi') }}" class="btn btn-outline btn-sm">Anunțuri</a>
           </div>
         </div>
@@ -155,211 +146,52 @@
     </div>
   </header>
 
-  <main class="mx-auto max-w-6xl px-6 py-10 lg:py-16">
-    <div class="grid lg:grid-cols-2 gap-8 items-start">
-
-      <div class="reveal">
-        <div class="card-glass rounded-3xl p-7 lg:p-10">
-          <span class="badge badge-primary">Start la Mișcare</span>
-          <h1 class="mt-4 text-4xl lg:text-5xl font-black leading-tight text-primary">
-            Înscriere la competiție
-          </h1>
-          <p class="mt-4 subtitle text-lg">
-            Completează formularul pentru a te înscrie la disciplina sportivă dorită.
-          </p>
-
-          <div class="mt-6 space-y-3">
-            <div class="rounded-2xl bg-white border border-warning/30 p-4">
-  <div class="font-black text-warning">Atenție</div>
-  
-  <p class="mt-1 text-sm text-yellow-800">
-      Dacă participantul este <b>minor</b>, formularul trebuie completat de către
-      <b>părinte / tutore</b>.<br>
-      Dacă participantul este <b>major</b>, formularul se completează personal.
-    </p>
-
-  
-</div>
-            <div class="rounded-2xl bg-white border border-base-300 p-4">
-              <div class="font-black text-primary">Eveniment</div>
-              <div class="subtitle">4 Iunie 2026</div>
-            </div>
-            <div class="rounded-2xl bg-white border border-base-300 p-4">
-              <div class="font-black text-primary">Locuri</div>
-              <div class="subtitle">Limitate pentru fiecare disciplină</div>
-            </div>
-            <div class="rounded-2xl bg-white border border-base-300 p-4">
-              <div class="font-black text-primary">Participare</div>
-              <div class="subtitle">Selectezi sportul direct din formular</div>
-              
-            </div>
-          </div>
+  <main class="mx-auto max-w-4xl px-6 py-10 lg:py-16">
+    
+    <div class="reveal">
+      <div class="card-glass rounded-3xl p-8 lg:p-12 shadow-glow text-center max-w-2xl mx-auto">
+        
+        <div class="mx-auto w-16 h-16 bg-brandRed/10 text-brandRed rounded-full flex items-center justify-center mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+          </svg>
         </div>
-      </div>
-      
 
-      <div class="reveal">
-        <div class="card-glass rounded-3xl p-7 lg:p-10 shadow-glow">
-          <h2 class="text-2xl lg:text-3xl font-black text-primary">Formular înscriere</h2>
-          <p class="mt-2 subtitle">Introdu datele tale mai jos.</p>
+        <span class="badge badge-error font-bold text-white px-4 py-3">Înscrieri Încheiate</span>
+        
+        <h1 class="mt-6 text-3xl lg:text-4xl font-black leading-tight text-brandBlack">
+          Perioada de înscriere s-a terminat
+        </h1>
+        
+        <p class="mt-4 subtitle text-lg leading-relaxed">
+          Înscrierile pentru evenimentul „Start la Mișcare” sunt acum complet închise. Vă mulțumim tuturor pentru interesul manifestat și abia așteptăm să ne vedem la eveniment!
+        </p>
 
-  <form action="{{ url_for('inscriere') }}" method="POST" class="mt-6 space-y-5">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-  <div class="grid md:grid-cols-2 gap-4">
-    <div>
-      <label class="font-semibold block mb-2">Nume</label>
-      <input name="nume" type="text" class="input input-bordered w-full bg-white" placeholder="Numele participantului" required>
-    </div>
-
-    <div>
-      <label class="font-semibold block mb-2">Prenume</label>
-      <input name="prenume" type="text" class="input input-bordered w-full bg-white" placeholder="Prenumele participantului" required>
-    </div>
-  </div>
-
-  <div class="grid md:grid-cols-2 gap-4">
-    <div>
-      <label class="font-semibold block mb-2">Email
-         <span class="text-sm opacity-60">(părinte dacă participantul este minor)</span>
-      </label>
-      <input name="email" type="email" class="input input-bordered w-full bg-white" placeholder="Introdu emailul" required>
-    </div>
-
-    <div>
-      <label class="font-semibold block mb-2">Telefon
-        <span class="text-sm opacity-60">(părinte dacă participantul este minor)</span>
-      </label>
-      <input name="telefon" type="tel" class="input input-bordered w-full bg-white" placeholder="Introdu numărul de telefon" required>
-    </div>
-  </div>
-
-  <div>
-    <label class="font-semibold block mb-2">Data nașterii</label>
-    <input name="data_nasterii" type="text" class="input input-bordered w-full bg-white" placeholder="zz.ll.aaaa" required>
-  </div>
-
-  <div class="rounded-2xl bg-base-200/70 border border-base-300 p-4">
-    <h3 class="font-black text-primary mb-4">Adresă</h3>
-
-    <div class="grid md:grid-cols-2 gap-4">
-      <div>
-        <label class="font-semibold block mb-2">Județ / Sector</label>
-        <input name="judet" type="text" class="input input-bordered w-full bg-white" placeholder="Introdu județul sau sectorul" required>
-      </div>
-
-      <div>
-        <label class="font-semibold block mb-2">Localitate</label>
-        <input name="localitate" type="text" class="input input-bordered w-full bg-white" placeholder="Introdu localitatea" required>
-      </div>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-4 mt-4">
-      <div class="md:col-span-2">
-        <label class="font-semibold block mb-2">Stradă</label>
-        <input name="strada" type="text" class="input input-bordered w-full bg-white" placeholder="Introdu strada" required>
-      </div>
-
-      <div>
-        <label class="font-semibold block mb-2">Număr</label>
-        <input name="numar" type="text" class="input input-bordered w-full bg-white" placeholder="Nr." required>
-      </div>
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-4 mt-4">
-      <div>
-        <label class="font-semibold block mb-2">Bloc <span class="text-sm opacity-60">(opțional)</span></label>
-        <input name="bloc" type="text" class="input input-bordered w-full bg-white" placeholder="Bloc">
-      </div>
-
-      <div>
-        <label class="font-semibold block mb-2">Apartament <span class="text-sm opacity-60">(opțional)</span></label>
-        <input name="apartament" type="text" class="input input-bordered w-full bg-white" placeholder="Apartament">
-      </div>
-    </div>
-  </div>
-
-  <div class="rounded-2xl bg-base-200/70 border border-base-300 p-4">
-    <h3 class="font-black text-primary mb-4">Act de identitate</h3>
-    <p >
-           În cazul în care participantul este minor, se vor completa datele actului de identitate ale părintelui.
+        <div class="mt-8 rounded-2xl bg-base-200/80 border border-brandRed/20 p-6 text-left text-center">
+          <h2 class="font-black text-xl text-primary inline-flex items-center gap-2 justify-center">
+            📅 Detalii Eveniment
+          </h2>
+          <p class="text-base leading-relaxed subtitle mt-2">
+            Evenimentul va avea loc pe data de <b>4 iunie 2026</b> în <b>Șanțurile Cetății</b>.
           </p>
-          
-    <div class="grid md:grid-cols-2 gap-4">
-      <div>
-        <label class="font-semibold block mb-2">Serie BI/CI</label>
-        <input name="serie_ci" type="text" class="input input-bordered w-full bg-white" placeholder="Ex: RX" required>
-      </div>
-
-      <div>
-        <label class="font-semibold block mb-2">Număr BI/CI</label>
-        <input name="numar_ci" type="text" class="input input-bordered w-full bg-white" placeholder="Ex: 123456" required>
-      </div>
-    </div>
-  </div>
-
-  <div>
-    <label class="font-semibold block mb-2">Sport</label>
-    <select name="sport" class="select select-bordered w-full bg-white" required>
-      <option value="">Alege sportul</option>
-      {% for sport in sporturi %}
-        <option value="{{ sport.nume }}">{{ sport.nume }}</option>
-      {% endfor %}
-    </select>
-  </div>
-
-  <div class="rounded-2xl bg-white border border-base-300 p-4 space-y-3">
-    <h3 class="font-black text-primary">Acorduri și responsabilitate</h3>
-
-    <div class="text-sm leading-6 opacity-80">
-      <p>
-        Prin completarea formularului, confirm că sunt apt(ă) pentru participare, am echipamentul adecvat,
-        înțeleg că particip pe propria răspundere, sunt de acord cu prelucrarea datelor personale,
-        cu folosirea materialelor foto/video realizate în cadrul evenimentului și cu prevederile
-        regulamentului evenimentului „Start la Mișcare”.
-      </p>
-    </div>
-
-    <div class="space-y-4">
-  <label class="flex items-center gap-3">
-  <input type="checkbox" name="acord_regulament" value="1" required>
-  <span>
-    Sunt de acord cu 
-    <a href="{{ url_for('index') }}#regulament" 
-       target="_blank"
-       class="text-primary font-semibold underline">
-       regulamentul evenimentului
-    </a>.
-  </span>
-</label>
-
-  <label class="flex items-center gap-3">
-    <input type="checkbox" name="acord_responsabilitate" value="1" required>
-    <span>Confirm participarea pe propria răspundere.</span>
-  </label>
-</div>
-  </div>
-
- 
-
-  
-
-  <button type="submit" class="btn btn-primary w-full">
-    Trimite înscrierea
-  </button>
-</form>
-
-          <div class="mt-5 text-center">
-            <a href="{{ url_for('index') }}" class="btn btn-ghost">Înapoi la pagina principală</a>
-          </div>
         </div>
-      </div>
 
+        <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+          <a href="{{ url_for('index') }}" class="btn btn-primary px-8">
+            Află programul probelor
+          </a>
+          <a href="{{ url_for('index') }}" class="btn btn-ghost">
+            Înapoi la pagina principală
+          </a>
+        </div>
+
+      </div>
     </div>
     
   </main>
 
   <script>
+    // Scriptul pentru animația fină de apariție (reveal)
     const revealEls = document.querySelectorAll(".reveal");
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -368,32 +200,6 @@
     }, { threshold: 0.12 });
     revealEls.forEach(el => io.observe(el));
   </script>
-{% if show_modal %}
-<dialog id="success_modal" class="modal modal-open">
-  <div class="modal-box bg-white text-black rounded-3xl shadow-2xl border border-base-300 max-w-lg">
-    
-    <h3 class="font-black text-2xl text-primary mb-3">
-      🎉 Felicitări!
-    </h3>
 
-    <p class="mb-4">
-      {{ nume }} {{ prenume }}, te-ai înscris cu succes la <b>{{ sport }}</b>!
-    </p>
-
-    <div class="space-y-2 mb-5">
-      <p><b>Validare participanți:</b> 10:30-11:00</p>
-      <p><b>Începere concurs:</b> 11:00</p>
-      <p><b>Locație:</b> Santurile Cetatii / terenul sportului ales</p>
-    </div>
-
-    <div class="modal-action">
-      <a href="{{ url_for('index') }}" class="btn btn-primary">
-        Înapoi la pagina principală
-      </a>
-    </div>
-
-  </div>
-</dialog>
-{% endif %}
 </body>
 </html>
